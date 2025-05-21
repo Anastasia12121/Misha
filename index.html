@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terraria Wiki - Интерактивная карта</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <style>
+        /* Общие стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: #1a1a2a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        
+        /* Шапка */
+        header {
+            background: linear-gradient(90deg, #2a1a3a, #3a0a4a);
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff8c00, #ff2d75);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(255, 140, 0, 0.5);
+            letter-spacing: 2px;
+        }
+        
+        .tagline {
+            font-size: 1rem;
+            color: #aaa;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        /* Основное содержимое - карта Terraria */
+        .terraria-map {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 80px);
+            overflow: hidden;
+            background-image: url('https://i.redd.it/oue6l5gby8j31.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        /* Элементы карты */
+        .map-element {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.5s ease-in-out;
+            z-index: 5;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+            max-width: 100px;
+            max-height: 100px;
+        }
+        
+        .map-element:hover {
+            animation: float 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
+            z-index: 6;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .element-label {
+            position: absolute;
+            background: rgba(20, 20, 40, 0.9);
+            color: #ffd700;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 7;
+            border: 1px solid #ff8c00;
+        }
+        
+        .map-element:hover .element-label {
+            opacity: 1;
+        }
+        
+        /* Позиционирование элементов с учетом непересечения */
+        /* Небесные острова */
+        .floating-island {
+            width: 80px;
+            top: 10%;
+            left: 15%;
+        }
+        
+        .cloud {
+            width: 80px;
+            top: 8%;
+            left: 75%;
+        }
+        
+        /* Поверхность - левая сторона */
+        .tree {
+            width: 80px;
+            bottom: 65%;
+            left: 20%;
+        }
+        
+        /* Поверхность - центр */
+        .house {
+            width: 100px;
+            bottom: 60%;
+            left: 45%;
+        }
+        
+        /* Поверхность - правая сторона */
+        .chest {
+            width: 50px;
+            bottom: 63%;
+            left: 70%;
+        }
+        
+        /* Подземелье - левая сторона */
+        .cave-entrance {
+            width: 70px;
+            bottom: 45%;
+            left: 30%;
+        }
+        
+        /* Подземелье - правая сторона */
+        .ore {
+            width: 8px;
+            bottom: 40%;
+            left: 65%;
+        }
+        
+        /* Ад - левая сторона */
+        .hellforge {
+            width: 60px;
+            bottom: 15%;
+            left: 25%;
+        }
+        
+        /* Ад - правая сторона */
+        .demon-altar {
+            width: 50px;
+            bottom: 12%;
+            left: 65%;
+        }
+        
+        /* Океан - отдельно справа */
+        .ocean-chest {
+            width: 60px;
+            bottom: 55%;
+            right: 8%;
+        }
+        
+        /* Подвал */
+        footer {
+            background: #1a1a2a;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #777;
+            border-top: 1px solid #333;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .terraria-map {
+                height: calc(100vh - 70px);
+                background-attachment: scroll;
+            }
+            
+            .map-element {
+                width: 50px !important;
+                max-width: 50px;
+            }
+            
+            .floating-island, .boss {
+                width: 80px !important;
+                max-width: 80px;
+            }
+            
+            /* Изменяем позиционирование для мобильных устройств */
+            .floating-island { top: 5%; left: 10%; }
+            .cloud { top: 5%; left: 70%; }
+            .tree { bottom: 70%; left: 15%; }
+            .house { bottom: 65%; left: 40%; width: 80px; }
+            .chest { bottom: 68%; left: 65%; }
+            .cave-entrance { bottom: 50%; left: 25%; }
+            .ore { bottom: 45%; left: 60%; }
+            .hellforge { bottom: 20%; left: 20%; }
+            .demon-altar { bottom: 18%; left: 60%; }
+            .ocean-chest { bottom: 60%; right: 5%; }
+            
+            .element-label {
+                font-size: 0.7rem;
+                padding: 3px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <div class="logo">TERRARIA WIKI</div>
+        <div class="tagline">Интерактивная карта мира Terraria</div>
+    </header>
+    
+    <!-- Интерактивная карта Terraria -->
+    <div class="terraria-map">
+        <!-- Небесные острова -->
+        <a href="#" class="map-element floating-island">
+            <img src="" alt="Небесные острова">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Небесные острова</div>
+        </a>
+        
+        <a href="#" class="map-element cloud">
+            <img src="" alt="облака">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Облака</div>
+        </a>
+        
+        <!-- Поверхность -->
+        <a href="#" class="map-element tree">
+            <img src="" alt="Деревья">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Деревья</div>
+        </a>
+        
+        <a href="#" class="map-element house">
+            <img src="" alt="Дома">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Дома NPC</div>
+        </a>
+        
+        <a href="#" class="map-element chest">
+            <img src="" alt="Сундуки">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Сундуки</div>
+        </a>
+        
+        <!-- Подземелье -->
+        <a href="pecher.html" class="map-element cave-entrance">
+            <img src="" alt="Пещеры">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Пещеры</div>
+        </a>
+        
+        <a href="ruda.html" class="map-element ore">
+            <img src="" alt="Руда">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Руда</div>
+        </a>
+        
+        <!-- Ад -->
+        <a href="#" class="map-element hellforge">
+            <img src="" alt="Адская кузня">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Адская кузня</div>
+        </a>
+        
+        <a href="#" class="map-element demon-altar">
+            <img src="" alt="Демонические алтари">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Демонические алтари</div>
+        </a>
+        
+        <!-- Океан -->
+        <a href="#" class="map-element ocean-chest">
+            <img src="" alt="Подводные сундуки">
+            <div class="element-label" style="bottom: -30px; left: 50%; transform: translateX(-50%);">Подводные сундуки</div>
+        </a>
+    </div>
+    
+    <!-- Подвал -->
+    <footer>
+        <p>Terraria Wiki © 2023 | Неофициальный фан-сайт | Все права на игру принадлежат Re-Logic</p>
+    </footer>
+</body>
+</html>
+
+
